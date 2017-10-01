@@ -159,7 +159,7 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
       i -= 1
       val e = changes(i)
       val u = state.flow(e) / capacities(e)
-      if (apply) edgeTree.changeWeight(e, math.pow(u, alpha))
+      if (apply) edgeTree.setWeight(e, math.pow(u, alpha))
       usage = math.max(usage, u)
     }
     usage
@@ -201,7 +201,7 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
     while (e > 0) {
       e -= 1
       val usage = state.flow(e) / capacities(e)
-      edgeTree.changeWeight(e, math.pow(usage, alpha))
+      edgeTree.setWeight(e, math.pow(usage, alpha))
     }
     state.saveChanges()
   }
