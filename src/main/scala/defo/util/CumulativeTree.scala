@@ -1,4 +1,4 @@
-package defo.ls
+package defo.util
 
 class CumulativeTree(size: Int) {
   
@@ -31,17 +31,5 @@ class CumulativeTree(size: Int) {
       }
     }
     i - size
-  }
-}
-
-object Test extends App {
-  val t = new CumulativeTree(4)
-  t.changeWeight(0, 2)
-  t.changeWeight(1, 1)
-  t.changeWeight(2, 4)
-  t.changeWeight(3, 8)
-  println(t.totalWeight)
-  for (i <- 0 to t.totalWeight.toInt) {
-    println(t.get(i))
   }
 }

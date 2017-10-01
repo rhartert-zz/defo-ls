@@ -5,6 +5,8 @@ import defo.core.Topology
 import defo.core.SegmentDB
 import defo.core.Demand
 import defo.util.Results
+import defo.util.CumulativeTree
+import defo.util.CumulativeTreeEx
 
 class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: SegmentDB, demands: Array[Demand], verbous: Boolean) {
 

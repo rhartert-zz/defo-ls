@@ -1,4 +1,4 @@
-package defo.ls
+package defo.util
 
 import scala.collection.mutable.HashMap
 
