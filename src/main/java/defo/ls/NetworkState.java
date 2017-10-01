@@ -5,7 +5,7 @@ public class NetworkState {
   // Quantity of flow forwarded on each link.
   private double[] flows;
   
-  // States.
+  // Keep track of the changes since the last saved state.
   private double[] changedFlows;
   private int[] changedLinks;
   private boolean[] changed;
@@ -19,6 +19,7 @@ public class NetworkState {
     this.nChanges = 0;
   }
   
+  /** Returns the quantity of data forwarded on `linkId`. */
   public double flow(int linkId) {
     return flows[linkId];
   }
@@ -31,8 +32,7 @@ public class NetworkState {
     return nChanges;
   }
   
-  // Save the current changes so that the current solution becomes the default
-  // solution. 
+  /** Saves the current changes. */
   public void saveChanges() {
     while (nChanges > 0) {
       nChanges--;
@@ -40,7 +40,7 @@ public class NetworkState {
     }
   }
 
-  // Undo the last changes so that the default solution is restored.
+  /** Undoes the changes to restore the last saved state. */
   public void undoChanges() {
     while (nChanges > 0) {
       nChanges--;

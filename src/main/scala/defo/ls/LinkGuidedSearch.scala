@@ -26,7 +26,9 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
 
   // The SR Path used to forward the demand in the network. 
   // They are initialized with no midpoint.
-  private[this] val srPaths = Array.tabulate(nDemands)(d => SRPath(demands(d), maxMidpoints))
+  private[this] val srPaths = Array.tabulate(nDemands)(d => {
+    new SRPath(demands(d).src, demands(d).dest, maxMidpoints)
+  })
 
   // Best move
   private final val NONE = 0
@@ -193,7 +195,7 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
       d -= 1
       val srPath = srPaths(d)
       srPath.clear()
-      addFlow(d, srPath.src, srPath.dest, srPath.bw, true)
+      addFlow(d, srPath.src, srPath.dest, demands(d).bw, true)
     }
     var e = nEdges
     while (e > 0) {
@@ -214,7 +216,7 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
     moveScore = state.flow(e)
 
     val a = demandTree(e).keys.toArray
-    val it = a.sortBy(d => -srPaths(d).bw).iterator
+    val it = a.sortBy(d => -demands(d).bw).iterator
     while (it.hasNext) {
       val d = it.next()
       val srPath = srPaths(d)
@@ -223,7 +225,7 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
       state.undoChanges()
 
       // Reset move 
-      if (srPath.canRemove) {
+      if (srPath.length() > 2) {
         resetMove(d, false)
         val usage = evaluateMove(false)
         val u = state.flow(e)
@@ -236,11 +238,11 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
       }
 
       // Insert move
-      if (srPath.canInsert) {
+      if (srPath.length < maxMidpoints + 2) {
         var pos = 1
         while (pos < srPath.length) {
-          val s = srPath(pos - 1)
-          val t = srPath(pos)
+          val s = srPath.get(pos - 1)
+          val t = srPath.get(pos)
           var m = nNodes
           while (m > 0) {
             m -= 1
@@ -264,12 +266,12 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
       }
 
       // Replace move
-      if (srPath.canRemove) {
+      if (srPath.length > 2) {
         var pos = 1
         while (pos < srPath.length - 1) {
-          val old = srPath(pos)
-          val s = srPath(pos - 1)
-          val t = srPath(pos + 1)
+          val old = srPath.get(pos)
+          val s = srPath.get(pos - 1)
+          val t = srPath.get(pos + 1)
           var m = nNodes
           while (m > 0) {
             m -= 1
@@ -319,43 +321,43 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
     val srPath = srPaths(d)
     var i = 1
     while (i < srPath.length) {
-      removeFlow(d, srPath(i - 1), srPath(i), srPath.bw, apply)
+      removeFlow(d, srPath.get(i - 1), srPath.get(i), demands(d).bw, apply)
       i += 1
     }
-    addFlow(d, srPath.src, srPath.dest, srPath.bw, apply)
+    addFlow(d, srPath.src, srPath.dest, demands(d).bw, apply)
   }
 
   private def insertMove(d: Int, pos: Int, midpoint: Int, apply: Boolean): Unit = {
     nMoves += 1
     val srPath = srPaths(d)
-    val s = srPath(pos - 1)
-    val t = srPath(pos)
-    removeFlow(d, s, t, srPath.bw, apply)
-    addFlow(d, s, midpoint, srPath.bw, apply)
-    addFlow(d, midpoint, t, srPath.bw, apply)
+    val s = srPath.get(pos - 1)
+    val t = srPath.get(pos)
+    removeFlow(d, s, t, demands(d).bw, apply)
+    addFlow(d, s, midpoint, demands(d).bw, apply)
+    addFlow(d, midpoint, t, demands(d).bw, apply)
   }
 
   private def replaceMove(d: Int, pos: Int, midpoint: Int, apply: Boolean): Unit = {
     nMoves += 1
     val srPath = srPaths(d)
-    val old = srPath(pos)
-    val s = srPath(pos - 1)
-    val t = srPath(pos + 1)
-    removeFlow(d, s, old, srPath.bw, apply)
-    removeFlow(d, old, t, srPath.bw, apply)
-    addFlow(d, s, midpoint, srPath.bw, apply)
-    addFlow(d, midpoint, t, srPath.bw, apply)
+    val old = srPath.get(pos)
+    val s = srPath.get(pos - 1)
+    val t = srPath.get(pos + 1)
+    removeFlow(d, s, old, demands(d).bw, apply)
+    removeFlow(d, old, t, demands(d).bw, apply)
+    addFlow(d, s, midpoint, demands(d).bw, apply)
+    addFlow(d, midpoint, t, demands(d).bw, apply)
   }
 
   private def removeMove(d: Int, pos: Int, apply: Boolean): Unit = {
     nMoves += 1
     val srPath = srPaths(d)
-    val old = srPath(pos)
-    val s = srPath(pos - 1)
-    val t = srPath(pos + 1)
-    removeFlow(d, s, old, srPath.bw, apply)
-    removeFlow(d, old, t, srPath.bw, apply)
-    if (s != t) addFlow(d, s, t, srPath.bw, apply)
+    val old = srPath.get(pos)
+    val s = srPath.get(pos - 1)
+    val t = srPath.get(pos + 1)
+    removeFlow(d, s, old, demands(d).bw, apply)
+    removeFlow(d, old, t, demands(d).bw, apply)
+    if (s != t) addFlow(d, s, t, demands(d).bw, apply)
   }
 }
 
