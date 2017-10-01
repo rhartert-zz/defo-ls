@@ -129,7 +129,7 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
   }
 
   private def selectEdge(): Int = {
-    edgeTree.get(rand.nextDouble() * edgeTree.totalWeight)
+    edgeTree.get(rand.self)
   }
 
   private def selectMaxEdge(): Int = {

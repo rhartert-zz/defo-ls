@@ -1,5 +1,7 @@
 package defo.util;
 
+import java.util.Random;
+
 public class CumulativeTree {
 
   private final int size;
@@ -26,9 +28,9 @@ public class CumulativeTree {
     }
   }
   
-  public int get(double weight) {
+  public int get(Random rng) {
+    double w = rng.nextDouble() * weights[1];
     int i = 1;
-    double w = weight;
     while (i < size) {
       final int left = i << 1;
       final int right = left + 1;
