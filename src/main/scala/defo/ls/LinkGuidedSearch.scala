@@ -12,8 +12,6 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
 
   private[this] val rand = new Random(0)
 
-  private[this] val state = new NetworkState(topology, capacities)
-
   private[this] var alpha = 8.0
 
   private[this] val maxMidpoints = 2;
@@ -21,6 +19,8 @@ class LinkGuidedSearch(topology: Topology, capacities: Array[Double], ecmps: Seg
   private[this] val nEdges = topology.nEdges
   private[this] val nNodes = topology.nNodes
   private[this] val nDemands = demands.length
+  
+  private[this] val state = new NetworkState(nEdges)
 
   private[this] var bestUsage = 0.0
 
