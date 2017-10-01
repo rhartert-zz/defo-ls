@@ -1,6 +1,6 @@
-package srte.ls
+package defo.ls
 
-import srte.util.Demand
+import defo.core.Demand
 
 class SRPath(val src: Int, val dest: Int, val bw: Double, maxMidpoints: Int) {
   private[this] val path = new Array[Int](maxMidpoints + 2)

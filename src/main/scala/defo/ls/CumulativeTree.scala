@@ -1,4 +1,4 @@
-package srte.ls
+package defo.ls
 
 class CumulativeTree(size: Int) {
   
